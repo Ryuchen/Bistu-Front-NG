@@ -1,9 +1,9 @@
-import { SettingsService, _HttpClient } from '@delon/theme';
+import { _HttpClient } from '@delon/theme';
 import { Component, Inject, Optional } from '@angular/core';
 import { HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { NzMessageService, NzModalService } from 'ng-zorro-antd';
+import { NzMessageService } from 'ng-zorro-antd';
 import { SocialService, ITokenService, DA_SERVICE_TOKEN } from '@delon/auth';
 import { StartupService } from '@core';
 import { SessionStorageService } from 'ngx-webstorage';
@@ -19,7 +19,6 @@ export class UserLoginComponent {
     public fb: FormBuilder,
     public http: _HttpClient,
     public msg: NzMessageService,
-    public modalSrv: NzModalService,
     private router: Router,
     @Optional()
     @Inject(DA_SERVICE_TOKEN)
@@ -32,7 +31,6 @@ export class UserLoginComponent {
       password: [null, Validators.required],
       remember: [true],
     });
-    modalSrv.closeAll();
   }
 
   // #region fields
@@ -72,9 +70,10 @@ export class UserLoginComponent {
         { headers },
       )
       .subscribe((res: any) => {
-        // 设置用户的认证信息
-        // this.sessionStorageService.store('authority', authority);
-        // this.sessionStorageService.store('permission', permission);
+        // 保存用户名在缓存里面，等用户锁屏的时候通过用户名可以直接解锁
+        this.sessionStorageService.store('username', this.username.value);
+
+        // 保存用户的 token 信息在缓存里面
         this.tokenService.set(res);
 
         // 重新获取 StartupService 内容，我们始终认为应用信息一般都会受当前用户授权范围而影响
