@@ -74,11 +74,9 @@ export class DefaultInterceptor implements HttpInterceptor {
       case 400:
         if (ev instanceof HttpErrorResponse) {
           const {
-            error: {
-              meta: { details },
-            },
+            error: { non_field_errors },
           } = ev;
-          this.messages.error(`${details}`);
+          this.messages.error(`${non_field_errors}`);
         }
         break;
       case 401:

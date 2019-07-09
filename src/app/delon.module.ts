@@ -26,7 +26,6 @@ export function fnDelonAuthConfig(): DelonAuthConfig {
     token_send_template: 'JWT ${token}',
     token_send_place: 'header',
     login_url: '/passport/login',
-    ignores: [/settings/, /accounts\/login/],
   };
 }
 

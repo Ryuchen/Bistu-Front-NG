@@ -13,6 +13,7 @@ import { NzIconService } from 'ng-zorro-antd/icon';
 import { ICONS_AUTO } from '../../../style-icons-auto';
 import { ICONS } from '../../../style-icons';
 
+import { LocalStorageService, SessionStorageService } from 'ngx-webstorage';
 /**
  * Used for application startup
  * Generally used to get the basic data of the application, like: Menu Data, User Data, etc.
@@ -30,29 +31,39 @@ export class StartupService {
     @Inject(DA_SERVICE_TOKEN) private tokenService: ITokenService,
     private httpClient: HttpClient,
     private injector: Injector,
+    private localStorageService: LocalStorageService,
+    private sessionStorageService: SessionStorageService,
   ) {
     iconSrv.addIcon(...ICONS_AUTO, ...ICONS);
   }
 
   private viaHttp(resolve: any, reject: any) {
     zip(
-      this.httpClient.get('settings/translation/?format=json'),
-      this.httpClient.get('settings/application/?format=json'),
+      this.httpClient.get('settings/translation/?_allow_anonymous=true&format=json'),
+      this.httpClient.get('settings/application/?_allow_anonymous=true&format=json'),
+      this.httpClient.get('settings/definitions/?_allow_anonymous=true&format=json'),
     )
       .pipe(
-        catchError(([langData, appData]) => {
+        catchError(([langData, appData, mappingData]) => {
           resolve(null);
-          return [langData, appData];
+          return [langData, appData, mappingData];
         }),
       )
       .subscribe(
-        ([langData, appData]) => {
+        ([langData, appData, mappingData]) => {
           const {
             data: { translation, default: defaultLang },
           } = langData;
           // Setting language data
           this.translate.setTranslation(defaultLang, translation);
           this.translate.setDefaultLang(defaultLang);
+
+          // Setting mapping data
+          for (const key in mappingData) {
+            if (this.localStorageService.retrieve(key) == null) {
+              this.localStorageService.store(key, mappingData[key]);
+            }
+          }
 
           // Application data
           const { app } = appData;
@@ -91,8 +102,15 @@ export class StartupService {
           } else {
             this.httpClient.get('accounts/current/').subscribe(userData => {
               // User information: including name, avatar, email address
-              console.log(userData);
-              this.settingService.setUser(userData);
+              const {
+                data: { profile, authority, permission },
+              } = userData as any;
+
+              // 设置用户的认证信息
+              this.sessionStorageService.store('authority', authority);
+              this.sessionStorageService.store('permission', permission);
+
+              this.settingService.setUser(profile);
             });
           }
         },
