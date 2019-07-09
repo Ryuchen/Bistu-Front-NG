@@ -1,0 +1,17 @@
+<div class="container">
+  <header-i18n showLangText="false" class="langs"></header-i18n>
+  <div class="wrap">
+    <div class="top">
+      <div class="head">
+        <img class="logo" src="./assets/bistu/caiselogo.png">
+      </div>
+      <div class="desc">北京信息科技大学-研究生管理系统</div>
+    </div>
+    <router-outlet></router-outlet>
+    <global-footer [links]="links">
+      Copyright
+      <i nz-icon nzType="copyright" nzTheme="outline"></i> 2019
+      <a href="//github.com/ryuchen" target="_blank">Ryuchen</a>出品
+    </global-footer>
+  </div>
+</div>

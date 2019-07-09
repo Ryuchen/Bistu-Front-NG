@@ -1,0 +1,37 @@
+<form nz-form [formGroup]="form" (ngSubmit)="submit()" role="form">
+  <nz-tabset [nzAnimated]="false" class="tabs" (nzSelectChange)="switch($event)">
+    <nz-tab [nzTitle]="'app.login.tab-login-credentials' | translate">
+      <nz-form-item>
+        <nz-form-control [nzErrorTip]="'Please enter mobile number!' | translate">
+          <nz-input-group nzSize="large" nzPrefixIcon="user">
+            <input nz-input formControlName="username" placeholder="username" autocomplete="username" />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control nzErrorTip="'Please enter password!' | translate">
+          <nz-input-group nzSize="large" nzPrefixIcon="lock">
+            <input nz-input type="password" formControlName="password" placeholder="password"
+              autocomplete="current-password" />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+    </nz-tab>
+  </nz-tabset>
+  <nz-form-item>
+    <nz-col [nzSpan]="12">
+      <label nz-checkbox formControlName="remember">{{ 'app.login.remember-me' | translate }}</label>
+    </nz-col>
+    <nz-col [nzSpan]="12" class="text-right">
+      <a class="forgot" (click)="msg.error('请找欧阳锋')">{{ 'app.login.forgot-password' | translate }}</a>
+    </nz-col>
+  </nz-form-item>
+  <nz-form-item>
+    <button nz-button type="submit" nzType="primary" nzSize="large" [nzLoading]="http.loading" nzBlock>
+      {{ 'app.login.login' | translate }}
+    </button>
+  </nz-form-item>
+</form>
+<div class="other">
+  <a class="register" routerLink="/passport/register">{{ 'app.login.signup' | translate }}</a>
+</div>
