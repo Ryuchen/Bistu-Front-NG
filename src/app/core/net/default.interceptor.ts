@@ -1,4 +1,4 @@
-import { Injectable, Injector } from '@angular/core';
+import { Injectable, Injector, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   HttpInterceptor,
@@ -7,13 +7,18 @@ import {
   HttpErrorResponse,
   HttpEvent,
   HttpResponseBase,
+  HttpHeaders,
 } from '@angular/common/http';
+
+import { _HttpClient } from '@delon/theme';
+import { DA_SERVICE_TOKEN, ITokenService } from '@delon/auth';
+
+import { environment } from '@env/environment';
+
 import { Observable, of, throwError } from 'rxjs';
 import { mergeMap, catchError } from 'rxjs/operators';
 import { NzMessageService, NzNotificationService } from 'ng-zorro-antd';
-import { _HttpClient } from '@delon/theme';
-import { environment } from '@env/environment';
-import { DA_SERVICE_TOKEN, ITokenService } from '@delon/auth';
+import * as jwt_decode from 'jwt-decode';
 
 const CODEMESSAGE = {
   200: '服务器成功返回请求的数据。',
@@ -38,7 +43,14 @@ const CODEMESSAGE = {
  */
 @Injectable()
 export class DefaultInterceptor implements HttpInterceptor {
-  constructor(private injector: Injector) {}
+  private refreshTokenAlreadyTry = false;
+
+  constructor(
+    private http: _HttpClient,
+    private injector: Injector,
+    @Inject(DA_SERVICE_TOKEN)
+    private tokenService: ITokenService,
+  ) {}
 
   private get notification(): NzNotificationService {
     return this.injector.get(NzNotificationService);
@@ -80,11 +92,34 @@ export class DefaultInterceptor implements HttpInterceptor {
         }
         break;
       case 401:
-        console.log(ev);
-        this.notification.error(`未登录或登录已过期，请重新登录。`, ``);
-        // 清空 token 信息
-        (this.injector.get(DA_SERVICE_TOKEN) as ITokenService).clear();
-        this.goTo('/passport/login');
+        if (ev instanceof HttpErrorResponse) {
+          const {
+            error: { detail },
+          } = ev;
+          if (detail === 'Signature has expired.') {
+            const tokenData = this.tokenService.get();
+            const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+            if (tokenData.token && !this.refreshTokenAlreadyTry) {
+              this.refreshTokenAlreadyTry = true;
+              const decoded = jwt_decode(tokenData.token);
+              const date = Math.round(new Date().getTime() / 1000);
+              if (decoded.exp < date) {
+                this.http
+                  .post('accounts/token-refresh/?_allow_anonymous=true', tokenData, null, { headers })
+                  .subscribe((res: any) => {
+                    // 保存用户的 refresh token 信息在缓存里面
+                    this.tokenService.set(res);
+                  });
+              }
+            }
+          } else {
+            this.refreshTokenAlreadyTry = false;
+            this.notification.error(`未登录或登录已过期，请重新登录。`, ``);
+            // 清空 token 信息
+            (this.injector.get(DA_SERVICE_TOKEN) as ITokenService).clear();
+            this.goTo('/passport/login');
+          }
+        }
         break;
       case 403:
       case 404:
