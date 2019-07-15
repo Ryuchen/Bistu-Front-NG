@@ -11,7 +11,14 @@ import {
   Inject,
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { Router, NavigationEnd, RouteConfigLoadStart, RouteConfigLoadEnd, NavigationError, NavigationCancel } from '@angular/router';
+import {
+  Router,
+  NavigationEnd,
+  RouteConfigLoadStart,
+  RouteConfigLoadEnd,
+  NavigationError,
+  NavigationCancel,
+} from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd';
 import { updateHostClass } from '@delon/util';
 import { SettingsService } from '@delon/theme';
@@ -24,6 +31,10 @@ import { SettingDrawerComponent } from './setting-drawer/setting-drawer.componen
 @Component({
   selector: 'layout-default',
   templateUrl: './default.component.html',
+  // tslint:disable-next-line: no-host-metadata-property
+  host: {
+    '[class.alain-default]': 'true',
+  },
 })
 export class LayoutDefaultComponent implements OnInit, AfterViewInit, OnDestroy {
   private unsubscribe$ = new Subject<void>();
