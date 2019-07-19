@@ -10,6 +10,17 @@ import { _HttpClient } from '@delon/theme';
   styleUrls: ['./register.component.less'],
 })
 export class UserRegisterComponent implements OnDestroy {
+  form: FormGroup;
+  error = '';
+  type = 0;
+  visible = false;
+  status = 'pool';
+  progress = 0;
+  passwordProgressMap = {
+    ok: 'success',
+    pass: 'normal',
+    pool: 'exception',
+  };
 
   constructor(fb: FormBuilder, private router: Router, public http: _HttpClient, public msg: NzMessageService) {
     this.form = fb.group({
@@ -39,22 +50,9 @@ export class UserRegisterComponent implements OnDestroy {
   get captcha() {
     return this.form.controls.captcha;
   }
-  form: FormGroup;
-  error = '';
-  type = 0;
-  visible = false;
-  status = 'pool';
-  progress = 0;
-  passwordProgressMap = {
-    ok: 'success',
-    pass: 'normal',
-    pool: 'exception',
-  };
-
   // #endregion
 
   // #region get captcha
-
   count = 0;
   interval$: any;
 

@@ -1,10 +1,9 @@
 import { Injectable, Injector, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { zip } from 'rxjs';
-import { Router } from '@angular/router';
 import { catchError } from 'rxjs/operators';
 import { MenuService, SettingsService, TitleService, ALAIN_I18N_TOKEN } from '@delon/theme';
-import { DA_SERVICE_TOKEN, ITokenService } from '@delon/auth';
+import { DA_SERVICE_TOKEN, ITokenService, JWTTokenModel } from '@delon/auth';
 import { ACLService } from '@delon/acl';
 import { TranslateService } from '@ngx-translate/core';
 import { I18NService } from '../i18n/i18n.service';
@@ -59,19 +58,22 @@ export class StartupService {
           this.translate.setDefaultLang(defaultLang);
 
           // Setting mapping data
-          for (const key in mappingData) {
+          for (const key in mappingData.data) {
             if (this.localStorageService.retrieve(key) == null) {
-              this.localStorageService.store(key, mappingData[key]);
+              this.localStorageService.store(key, mappingData.data[key]);
             }
           }
 
           // Application data
-          const { app } = appData;
+          const {
+            data: { app },
+          } = appData;
           // Application information: including site name, description, year
           this.settingService.setApp(app);
 
           // ACL: Set the permissions to full, https://ng-alain.com/acl/getting-started
           this.aclService.setFull(true);
+
           // Menu data, https://ng-alain.com/theme/menu
           this.menuService.add([
             {
@@ -96,10 +98,8 @@ export class StartupService {
           this.titleService.suffix = app.name;
 
           // 启动的时候判断当前有没有存储 token 值，如果存储则直接跳转到首页，否则跳转到登录页面
-          const tokenData = this.tokenService.get();
-          if (!tokenData.token) {
-            this.injector.get(Router).navigateByUrl('/passport/login');
-          } else {
+          const tokenData = this.tokenService.get(JWTTokenModel);
+          if (tokenData.token) {
             this.httpClient.get('accounts/current/').subscribe(userData => {
               // User information: including name, avatar, email address
               const {

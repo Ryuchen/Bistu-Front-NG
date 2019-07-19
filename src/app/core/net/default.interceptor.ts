@@ -11,14 +11,13 @@ import {
 } from '@angular/common/http';
 
 import { _HttpClient } from '@delon/theme';
-import { DA_SERVICE_TOKEN, ITokenService } from '@delon/auth';
+import { DA_SERVICE_TOKEN, ITokenService, JWTTokenModel } from '@delon/auth';
 
 import { environment } from '@env/environment';
 
 import { Observable, of, throwError } from 'rxjs';
 import { mergeMap, catchError } from 'rxjs/operators';
 import { NzMessageService, NzNotificationService } from 'ng-zorro-antd';
-import * as jwt_decode from 'jwt-decode';
 
 const CODEMESSAGE = {
   200: '服务器成功返回请求的数据。',
@@ -86,34 +85,22 @@ export class DefaultInterceptor implements HttpInterceptor {
       case 400:
         if (ev instanceof HttpErrorResponse) {
           const {
-            error: { non_field_errors },
+            error: {
+              meta: { details },
+            },
           } = ev;
-          this.messages.error(`${non_field_errors}`);
+          this.messages.error(`${details}`);
         }
         break;
       case 401:
         if (ev instanceof HttpErrorResponse) {
-          const {
-            error: { detail },
-          } = ev;
-          if (detail === 'Signature has expired.') {
-            const tokenData = this.tokenService.get();
-            const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-            if (tokenData.token && !this.refreshTokenAlreadyTry) {
-              this.refreshTokenAlreadyTry = true;
-              const decoded = jwt_decode(tokenData.token);
-              const date = Math.round(new Date().getTime() / 1000);
-              if (decoded.exp < date) {
-                this.http
-                  .post('accounts/token-refresh/?_allow_anonymous=true', tokenData, null, { headers })
-                  .subscribe((res: any) => {
-                    // 保存用户的 refresh token 信息在缓存里面
-                    this.tokenService.set(res);
-                  });
-              }
-            }
+          const tokenData = this.tokenService.get(JWTTokenModel);
+          if (tokenData && tokenData.isExpired()) {
+            this.notification.error(`未登录或登录已过期，请重新登录。`, ``);
+            // 清空 token 信息
+            (this.injector.get(DA_SERVICE_TOKEN) as ITokenService).clear();
+            this.goTo('/passport/login');
           } else {
-            this.refreshTokenAlreadyTry = false;
             this.notification.error(`未登录或登录已过期，请重新登录。`, ``);
             // 清空 token 信息
             (this.injector.get(DA_SERVICE_TOKEN) as ITokenService).clear();

@@ -21,10 +21,6 @@ export function fnPageHeaderConfig(): PageHeaderConfig {
 export function fnDelonAuthConfig(): DelonAuthConfig {
   return {
     ...new DelonAuthConfig(),
-    token_send_key: `Authorization`,
-    // tslint:disable-next-line: no-invalid-template-strings
-    token_send_template: 'JWT ${token}',
-    token_send_place: 'header',
     login_url: '/passport/login',
   };
 }
