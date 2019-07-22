@@ -7,7 +7,7 @@ import { DA_SERVICE_TOKEN, ITokenService } from '@delon/auth';
 
 import { StartupService } from '@core';
 
-import { NzMessageService, NzModalRef, NzModalService } from 'ng-zorro-antd';
+import { NzMessageService, NzModalService } from 'ng-zorro-antd';
 
 @Component({
   selector: 'passport-login',

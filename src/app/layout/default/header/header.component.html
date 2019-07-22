@@ -1,7 +1,9 @@
 <div class="alain-default__header-logo">
   <a [routerLink]="['/']" class="alain-default__header-logo-link alain-default__header-logo-link">
-    <img class="alain-default__header-logo-expanded" src="assets/bistu/caiselogo.png" alt="{{settings.app.name}}" style="max-height:30px;">
-    <img class="alain-default__header-logo-collapsed" src="assets/bistu/logo.png" alt="{{settings.app.name}}" style="max-height:30px;">
+    <img class="alain-default__header-logo-expanded" src="assets/bistu/caiselogo.png" alt="{{settings.app.name}}"
+      style="max-height:30px;">
+    <img class="alain-default__header-logo-collapsed" src="assets/bistu/logo.png" alt="{{settings.app.name}}"
+      style="max-height:30px;">
   </a>
 </div>
 <div class="alain-default__nav-wrap">
@@ -43,7 +45,8 @@
     </li>
     <!--Settings-->
     <li class="hidden-mobile">
-      <div class="alain-default__nav-item" nz-dropdown [nzDropdownMenu]="settingsMenu" nzTrigger="click" nzPlacement="bottomRight">
+      <div class="alain-default__nav-item" nz-dropdown [nzDropdownMenu]="settingsMenu" nzTrigger="click"
+        nzPlacement="bottomRight">
         <i nz-icon nzType="setting"></i>
       </div>
       <nz-dropdown-menu #settingsMenu="nzDropdownMenu">
@@ -51,18 +54,11 @@
           <div nz-menu-item>
             <header-fullscreen></header-fullscreen>
           </div>
-          <!--最后这个要移除-->
-          <div nz-menu-item>
-            <header-storage></header-storage>
-          </div>
           <div nz-menu-item>
             <header-i18n></header-i18n>
           </div>
         </div>
       </nz-dropdown-menu>
-    </li>
-    <li class="hidden-mobile">
-      <header-user></header-user>
     </li>
   </ul>
 </div>

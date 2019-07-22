@@ -1,8 +1,12 @@
 <div class="alain-default__aside-inner">
   <div class="alain-default__aside-user">
-    <nz-avatar class="alain-default__aside-user-avatar" [nzSrc]="settings.user.avatar"></nz-avatar>
-    <div class="alain-default__aside-user-info">
-      <strong>{{ settings.user.name }}</strong>
+    <div class="user-avatar">
+      <nz-avatar class="alain-default__aside-user-avatar" [nzSrc]="settings.user.avatar" [nzSize]="64"></nz-avatar>
+    </div>
+    <div class="user-info">
+      <div><strong>{{ settings.user.name }}</strong></div>
+      <div>{{ settings.user.group }}</div>
+      <div>{{ settings.user.email }}</div>
     </div>
   </div>
   <sidebar-nav class="d-block py-lg"></sidebar-nav>

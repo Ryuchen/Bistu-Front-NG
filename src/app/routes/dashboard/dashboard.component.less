@@ -1,6 +1,28 @@
 @import '~@delon/theme/styles/default';
 
 :host ::ng-deep {
+  .ant-card {
+    position: relative;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    color: rgba(0, 0, 0, 0.65);
+    font-size: 14px;
+    font-variant: tabular-nums;
+    line-height: 1.5;
+    list-style: none;
+    background: #fff;
+    border-radius: 2px;
+    -webkit-transition: all 0.3s;
+    transition: all 0.3s;
+    -webkit-font-feature-settings: 'tnum';
+    font-feature-settings: 'tnum';
+  }
+
+  .ant-card-actions {
+    margin: 0 -24px -24px -23px;
+  }
+
   .content {
     display: flex;
 
@@ -103,10 +125,6 @@
         font-size: @font-size-base;
         line-height: 24px;
         vertical-align: top;
-
-        &:hover {
-          color: @primary-color;
-        }
       }
     }
 
@@ -115,12 +133,10 @@
     }
 
     .project-item {
-      display: flex;
-      height: 20px;
-      margin-top: 8px;
+      margin: 16px 0 16px 20px;
       overflow: hidden;
-      font-size: 12px;
-      line-height: 20px;
+      font-size: 14px;
+      line-height: 22px;
       .textOverflow();
 
       a {
@@ -139,6 +155,16 @@
         float: right;
         color: @disabled-color;
       }
+    }
+
+    .ratio-header {
+      margin: 20px;
+      text-align: center;
+    }
+
+    .radio-chart {
+      height: 100%;
+      margin: 40px auto;
     }
   }
 

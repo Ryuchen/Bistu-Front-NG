@@ -1,4 +1,4 @@
-<page-header [breadcrumb]="breadcrumb" [content]="content" [extra]="extra">
+<page-header [autoTitle]="false" [syncTitle]="false" [breadcrumb]="breadcrumb" [content]="content" [extra]="extra">
   <ng-template #breadcrumb>
     <nz-breadcrumb>
       <nz-breadcrumb-item>
@@ -11,12 +11,9 @@
   </ng-template>
   <ng-template #content>
     <div class="content">
-      <div class="avatar">
-        <nz-avatar [nzSrc]="setting.user.avatar"></nz-avatar>
-      </div>
       <div class="desc">
-        <div class="desc-title">{{ setting.user.title }}</div>
-        <div>{{ setting.user.group }} | {{ setting.user.email }}</div>
+        <div class="desc-title">{{ settingService.user.title }}</div>
+        <div>{{ settingService.user.group }} | {{ settingService.user.email }}</div>
       </div>
     </div>
   </ng-template>
@@ -40,3 +37,40 @@
     </div>
   </ng-template>
 </page-header>
+
+<div nz-row [nzGutter]="24">
+  <div nz-col nzXs="16" nzSm="16" nzMd="16">
+    <app-piechart></app-piechart>
+    <nz-card nzTitle="研究生学院" [nzBordered]="false" [nzLoading]="loading"
+      class="ant-card__body-nopadding mb-lg project-list">
+      <div *ngFor="let item of academies" nz-card-grid class="project-grid">
+        <nz-card [nzBordered]="false" [nzSize]="'default'" [nzActions]="[actionSetting, actionEdit, actionEllipsis]">
+          <nz-card-meta [nzTitle]="academyName">
+            <ng-template #academyName>
+              <div class="card-title">
+                <nz-avatar [nzSrc]="item.avatar" [nzSize]="'large'"></nz-avatar>
+                <a (click)="academy = item.name">{{ item.name }}</a>
+              </div>
+            </ng-template>
+          </nz-card-meta>
+          <div class="project-item">
+            <div>在校研究生人数: {{ item.students }}</div>
+            <div>当前开设专业: {{ item.majors }}</div>
+          </div>
+          <ng-template #actionSetting>
+            <i nz-icon nzType="link" nzTheme="outline" (click)="msg.info(item.link)"></i>
+          </ng-template>
+          <ng-template #actionEdit>
+            <i nz-icon nzType="phone" nzTheme="outline" (click)="msg.info(item.phone)"></i>
+          </ng-template>
+          <ng-template #actionEllipsis>
+            <i nz-icon nzType="export" nzTheme="outline" (click)="msg.info('这是一个跳转链接')"></i>
+          </ng-template>
+        </nz-card>
+      </div>
+    </nz-card>
+  </div>
+  <div nz-col nzXs="8" nzSm="8" nzMd="8">
+    <app-custom></app-custom>
+  </div>
+</div>
